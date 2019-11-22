@@ -9,6 +9,25 @@
 import UIKit
 
 class ChecklistViewController: UITableViewController {
+    
+    var items: [ChecklistItem]
+    
+    required init?(coder aDecoder: NSCoder) {
+        
+        items = [ChecklistItem]()
+        
+        let rowItem0 = ChecklistItem(text: "eat", checked: true)
+        let rowItem1 = ChecklistItem(text: "sleep", checked: false)
+        let rowItem2 = ChecklistItem(text: "code", checked: true)
+        
+        items.append(rowItem0)
+        items.append(rowItem1)
+        items.append(rowItem2)
+        
+        
+        super.init(coder: aDecoder)
+        
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,45 +36,41 @@ class ChecklistViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 100
+        return items.count
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let cell = tableView.cellForRow(at: indexPath) {
-            if cell.accessoryType == .none {
-                cell.accessoryType = .checkmark
-            } else {
-                cell.accessoryType = .none
-            }
             
-            tableView.deselectRow(at: indexPath, animated: true)
+            let item = items[indexPath.row]
+            item.isChecked = !item.isChecked
+         
+            configureCheckmark(for: cell, at: indexPath)
         }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ChecklistItem", for: indexPath)
         let label = cell.viewWithTag(1000) as! UILabel
-        var msg = ""
         
+        let item = items[indexPath.row]
+        label.text = item.text
         
-        switch (indexPath.row % 5) {
-        case 0:
-            msg = "Walk the dog"
-        case 1:
-            msg = "Brush my teeth"
-        case 2:
-            msg = "Learn iOS"
-        case 3:
-            msg = "Practice iOS"
-        case 4:
-            msg = "Eat"
-        default:
-            msg = ""
-        }
+        configureCheckmark(for: cell, at: indexPath)
         
-        label.text = msg
         return cell
+    }
+    
+    func configureCheckmark(for cell: UITableViewCell, at indexPath: IndexPath) {
+        let item = items[indexPath.row]
+        
+        if item.isChecked {
+            cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+        }
     }
 }
 
